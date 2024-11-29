@@ -130,25 +130,29 @@ while running:
     player_pos[1] += move_y * player_speed
 
     # Shooting bullets
-    # Automatically fire bullets toward the mouse at regular intervals
     if pygame.time.get_ticks() - last_shot >= fire_rate:
         last_shot = pygame.time.get_ticks()
-        mouse_x, mouse_y = pygame.mouse.get_pos()  # Get mouse position relative to screen
-        target_x = mouse_x + camera_offset[0]  # Adjust for camera offset
+
+        # Get mouse position relative to the screen (camera offset applied)
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        target_x = mouse_x + camera_offset[0]  # Adjust target position for camera offset
         target_y = mouse_y + camera_offset[1]
 
         # Calculate direction from player to target
         dx = target_x - player_pos[0]
         dy = target_y - player_pos[1]
         distance = math.sqrt(dx**2 + dy**2)
+
         if distance != 0:
             direction = (dx / distance, dy / distance)  # Normalize direction
             bullet_rect = pygame.Rect(player_pos[0], player_pos[1], 10, 10)
             bullets.append({"rect": bullet_rect, "direction": direction})
 
+
     # Update camera offset
     camera_offset[0] = player_pos[0] - WIDTH // 2
     camera_offset[1] = player_pos[1] - HEIGHT // 2
+
 
     # Clear screen and draw background
     screen.fill(BLACK)
@@ -163,17 +167,19 @@ while running:
     for bullet in bullets[:]:
         bullet["rect"].x += bullet["direction"][0] * bullet_speed
         bullet["rect"].y += bullet["direction"][1] * bullet_speed
-
+    
         # Remove bullets if they leave the screen
-        if not (0 <= bullet["rect"].x <= WIDTH and 0 <= bullet["rect"].y <= HEIGHT):
-            bullets.remove(bullet)
+        for bullet in bullets[:]:
+            if not (0 <= bullet["rect"].x <= WIDTH and 0 <= bullet["rect"].y <= HEIGHT):
+                bullets.remove(bullet)
 
-    # Draw bullets
+    # Adjust for camera offset when drawing bullets
     for bullet in bullets:
         bullet_screen_x = bullet["rect"].x - camera_offset[0]
         bullet_screen_y = bullet["rect"].y - camera_offset[1]
         screen.blit(bullet_img, (bullet_screen_x, bullet_screen_y))
 
+        
     # Move and update enemies
     for enemy in enemies:
         move_towards(enemy, player_pos, enemy_speed)
