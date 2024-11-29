@@ -1,4 +1,5 @@
 import pygame
+import os
 
 # Colors (for text if needed)
 WHITE = (255, 255, 255)
@@ -13,28 +14,48 @@ def draw_text(screen, text, x, y, color=WHITE):
     screen.blit(label, (x, y))
 
 def main_menu(screen):
-    """Display the main menu with a background image and button images."""
+    """Display the main menu with an animated background."""
     menu_running = True
 
-    # Load background image
-    background_img = pygame.image.load("menubg.gif").convert()
-    background_img = pygame.transform.scale(background_img, (1280, 720))
+    # Load frames for the animated background
+    background_frames = []
+    frame_folder = "menuframes"  # Folder containing frames
+    for frame_file in sorted(os.listdir(frame_folder)):  # Ensure frames are loaded in order
+        frame_path = os.path.join(frame_folder, frame_file)
+        
+        # Load and scale each frame
+        frame = pygame.image.load(frame_path).convert()
+        frame = pygame.transform.scale(frame, (1280, 720))  # Change size to screen resolution
+        background_frames.append(frame)
 
     # Load button images
     start_button_img = pygame.image.load("PlayBtn.png").convert_alpha()
     quit_button_img = pygame.image.load("ExitBtn.png").convert_alpha()
-    
+
     # Scale buttons if needed
     start_button_img = pygame.transform.scale(start_button_img, (200, 100))
     quit_button_img = pygame.transform.scale(quit_button_img, (200, 100))
-    
+
     # Button positions
     start_button_rect = start_button_img.get_rect(center=(640, 300))  # Center of the screen
     quit_button_rect = quit_button_img.get_rect(center=(640, 450))  # Below the start button
 
+    # Animation variables
+    current_frame = 0
+    frame_delay = 100  # Delay in milliseconds between frames
+    last_frame_update = pygame.time.get_ticks()
+
     while menu_running:
-        # Draw background
-        screen.blit(background_img, (0, 0))
+        # Get the current time
+        now = pygame.time.get_ticks()
+
+        # Update the background frame
+        if now - last_frame_update > frame_delay:
+            current_frame = (current_frame + 1) % len(background_frames)  # Loop through frames
+            last_frame_update = now
+
+        # Draw the current frame of the animated background
+        screen.blit(background_frames[current_frame], (0, 0))
 
         # Draw title
         draw_text(screen, "Liv", 540, 150, WHITE)
