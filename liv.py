@@ -96,17 +96,29 @@ while running:
             # Spawn a wave of enemies
             for _ in range(5):
                 enemies.append(spawn_enemy())
-
+                
     # Player movement
     keys = pygame.key.get_pressed()
+    move_x, move_y = 0, 0
+
     if keys[pygame.K_w] and player_pos[1] > 0:
-        player_pos[1] -= player_speed
+        move_y = -1
     if keys[pygame.K_s] and player_pos[1] < HEIGHT - player_size:
-        player_pos[1] += player_speed
+        move_y = 1
     if keys[pygame.K_a] and player_pos[0] > 0:
-        player_pos[0] -= player_speed
+        move_x = -1
     if keys[pygame.K_d] and player_pos[0] < WIDTH - player_size:
-        player_pos[0] += player_speed
+        move_x = 1
+
+    # Normalize diagonal movement
+    if move_x != 0 or move_y != 0:
+        magnitude = math.sqrt(move_x**2 + move_y**2)
+        move_x /= magnitude
+        move_y /= magnitude
+
+    # Apply movement
+        player_pos[0] += move_x * player_speed
+        player_pos[1] += move_y * player_speed
 
     # Update player angle to face the mouse cursor
     mouse_x, mouse_y = pygame.mouse.get_pos()
