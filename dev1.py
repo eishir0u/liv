@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+from menu import main_menu
 
 # Initialize Pygame
 pygame.init()
@@ -34,7 +35,7 @@ enemy_img = pygame.transform.scale(enemy_img, (20, 20))     # Resize as needed
 
 # Player setup
 player_pos = [WIDTH // 2, HEIGHT // 2]
-player_size = 30
+player_size = 50
 player_health = 10
 player_angle = 0  # Initial angle the player is facing (default: 0 degrees)
 
@@ -45,7 +46,7 @@ bullets = []
 enemies = []
 
 # Abilities
-fire_rate = 120  # Frames between shots
+fire_rate = 360  # Frames between shots
 last_shot = 0
 
 # Fonts
@@ -93,6 +94,9 @@ def draw_background():
             screen.blit(background_img, (tile_x, tile_y))
 
 # Main game loop
+if __name__ == "__main__":
+    # Display the main menu first
+    main_menu(screen)
 running = True
 pygame.time.set_timer(pygame.USEREVENT, wave_interval)
 while running:
