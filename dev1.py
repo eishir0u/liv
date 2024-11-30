@@ -19,10 +19,10 @@ wave_interval = 5000  # Time between waves (ms)
 
 # Load sprites
 background_img = pygame.image.load("Grass_Sample.png").convert()
-player_img = pygame.image.load("gigi.jpg").convert_alpha()
-player_img = pygame.transform.scale(player_img, (40, 40))  # Resize as needed
-bullet_img = pygame.image.load("gigi.jpg").convert_alpha()
-bullet_img = pygame.transform.scale(bullet_img, (20, 20))  # Resize as needed
+player_img = pygame.image.load("player.png").convert_alpha()
+player_img = pygame.transform.scale(player_img, (60, 60))  # Resize as needed
+bullet_img = pygame.image.load("bullet.png").convert_alpha()
+bullet_img = pygame.transform.scale(bullet_img, (30, 30))  # Resize as needed
 
 # Fonts
 font = pygame.font.SysFont(None, 36)
