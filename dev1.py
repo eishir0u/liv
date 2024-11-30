@@ -3,6 +3,7 @@ import math
 from menu import main_menu
 from settings import *
 from enemy_spawner import *
+from pygame import mixer
 
 # Initialize Pygame
 pygame.init()
@@ -12,6 +13,10 @@ clock = pygame.time.Clock()
 
 # Fonts
 font = pygame.font.SysFont(None, 36)
+
+# Background Music
+mixer.music.load('cirnos_theme_remix.wav')
+mixer.music.play(-1)
 
 # Functions
 def draw_text(text, x, y, color=WHITE):
