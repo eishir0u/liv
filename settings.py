@@ -4,7 +4,6 @@ HEIGHT = 720
 FPS = 60
 safe_margin = 50  # Allows a small buffer for bullets outside the screen
 
-
 # Player Values
 player_pos = [WIDTH // 2, HEIGHT // 2]
 player_size = 50

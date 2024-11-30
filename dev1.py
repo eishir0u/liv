@@ -191,13 +191,6 @@ while running:
             player_health -= 1
 
     # Check for collisions between bullets and enemies
-    # for bullet in bullets[:]:
-    #     for enemy in enemies[:]:
-    #         if bullet["rect"].colliderect(enemy):  # Collision detected
-    #             enemies.remove(enemy)  # Remove the enemy
-    #             bullets.remove(bullet)  # Remove the bullet
-    #             break  # No need to check this bullet against other enemies
-    # Check for collisions between bullets and enemies
     for bullet in bullets[:]:
         for enemy in enemies[:]:
             # Only check nearby enemies (distance threshold)
