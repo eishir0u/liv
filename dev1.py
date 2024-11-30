@@ -2,25 +2,17 @@ import pygame
 import random
 import math
 from menu import main_menu
+from settings import *
 
 # Initialize Pygame
 pygame.init()
 
 # Screen dimensions
-WIDTH, HEIGHT = 1280, 720
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("liv")
 
-# Colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-
 # Game variables
 clock = pygame.time.Clock()
-FPS = 60
-player_speed = 5
-bullet_speed = 7
 enemy_speed = 2
 wave_interval = 5000  # Time between waves (ms)
 
@@ -32,22 +24,6 @@ bullet_img = pygame.image.load("gigi.jpg").convert_alpha()  # Replace with your 
 bullet_img = pygame.transform.scale(bullet_img, (10, 10))   # Resize as needed
 enemy_img = pygame.image.load("gigi.jpg").convert_alpha()   # Replace with your sprite file
 enemy_img = pygame.transform.scale(enemy_img, (20, 20))     # Resize as needed
-
-# Player setup
-player_pos = [WIDTH // 2, HEIGHT // 2]
-player_size = 50
-player_health = 10
-player_angle = 0  # Initial angle the player is facing (default: 0 degrees)
-
-# Bullet list
-bullets = []
-
-# Enemy list
-enemies = []
-
-# Abilities
-fire_rate = 360  # Frames between shots
-last_shot = 0
 
 # Fonts
 font = pygame.font.SysFont(None, 36)
