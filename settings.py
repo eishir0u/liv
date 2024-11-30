@@ -6,7 +6,7 @@ safe_margin = 50  # Allows a small buffer for bullets outside the screen
 
 # Player Values
 player_pos = [WIDTH // 2, HEIGHT // 2]
-player_size = 50
+player_size = 100
 player_health = 10
 player_angle = 0  # Initial angle the player is facing (default: 0 degrees)
 player_speed = 5
