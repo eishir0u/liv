@@ -33,22 +33,24 @@ def draw_text(text, x, y, color=WHITE):
     label = font.render(text, True, color)
     screen.blit(label, (x, y))
 
+# def spawn_enemy():
 def spawn_enemy():
-    """Spawns an enemy at a random edge of the screen."""
+    """Spawns an enemy at a random edge of the world (not screen)."""
     side = random.choice(["top", "bottom", "left", "right"])
     if side == "top":
-        x = random.randint(0, WIDTH)
-        y = -20
+        x = random.randint(0, WIDTH) + camera_offset[0]
+        y = -20 + camera_offset[1]
     elif side == "bottom":
-        x = random.randint(0, WIDTH)
-        y = HEIGHT + 20
+        x = random.randint(0, WIDTH) + camera_offset[0]
+        y = HEIGHT + 20 + camera_offset[1]
     elif side == "left":
-        x = -20
-        y = random.randint(0, HEIGHT)
+        x = -20 + camera_offset[0]
+        y = random.randint(0, HEIGHT) + camera_offset[1]
     else:  # "right"
-        x = WIDTH + 20
-        y = random.randint(0, HEIGHT)
+        x = WIDTH + 20 + camera_offset[0]
+        y = random.randint(0, HEIGHT) + camera_offset[1]
     return pygame.Rect(x, y, 20, 20)
+
 
 def move_towards(rect, target, speed):
     """Move a rectangle towards a target at a given speed."""
@@ -63,10 +65,15 @@ background_width, background_height = background_img.get_width(), background_img
 
 # Infinite background tiling
 def draw_background():
-    for x in range(-1, WIDTH // background_width + 2):
-        for y in range(-1, HEIGHT // background_height + 2):
-            tile_x = x * background_width - (camera_offset[0] % background_width)
-            tile_y = y * background_height - (camera_offset[1] % background_height)
+    # Ensure integer division for start_x and start_y
+    start_x = int(camera_offset[0] // background_width)
+    start_y = int(camera_offset[1] // background_height)
+
+    # Ensure all calculations use integers
+    for x in range(start_x, start_x + WIDTH // background_width + 2):
+        for y in range(start_y, start_y + HEIGHT // background_height + 2):
+            tile_x = x * background_width - int(camera_offset[0])
+            tile_y = y * background_height - int(camera_offset[1])
             screen.blit(background_img, (tile_x, tile_y))
 
 # Main game loop
@@ -113,22 +120,23 @@ while running:
     if pygame.time.get_ticks() - last_shot >= fire_rate:
         last_shot = pygame.time.get_ticks()
 
-        # Get mouse position relative to the screen (camera offset applied)
+        # Get mouse position relative to the screen
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        target_x = mouse_x + camera_offset[0]  # Adjust target position for camera offset
+
+        # Convert mouse position to world coordinates using the camera offset
+        target_x = mouse_x + camera_offset[0]
         target_y = mouse_y + camera_offset[1]
 
-        # Calculate direction from player to target
+        # Calculate direction from player (in world coordinates) to the target
         dx = target_x - player_pos[0]
         dy = target_y - player_pos[1]
         distance = math.sqrt(dx**2 + dy**2)
 
         if distance != 0:
             direction = (dx / distance, dy / distance)  # Normalize direction
-            bullet_rect = pygame.Rect(player_pos[0], player_pos[1], 10, 10)
+            bullet_rect = pygame.Rect(player_pos[0], player_pos[1], 10, 10)  # Spawn bullet in world coordinates
             bullets.append({"rect": bullet_rect, "direction": direction})
-
-
+    
     # Update camera offset
     camera_offset[0] = player_pos[0] - WIDTH // 2
     camera_offset[1] = player_pos[1] - HEIGHT // 2
@@ -143,15 +151,23 @@ while running:
     player_rect = rotated_player.get_rect(center=(WIDTH // 2, HEIGHT // 2))  # Centered on screen
     screen.blit(rotated_player, player_rect.topleft)
 
-    # Move and update bullets
+    # Update bullets
     for bullet in bullets[:]:
         bullet["rect"].x += bullet["direction"][0] * bullet_speed
         bullet["rect"].y += bullet["direction"][1] * bullet_speed
-    
-        # Remove bullets if they leave the screen
-        for bullet in bullets[:]:
-            if not (0 <= bullet["rect"].x <= WIDTH and 0 <= bullet["rect"].y <= HEIGHT):
-                bullets.remove(bullet)
+
+    # Remove bullets outside the camera's view
+    camera_left = camera_offset[0] - safe_margin
+    camera_top = camera_offset[1] - safe_margin
+    camera_right = camera_offset[0] + WIDTH + safe_margin
+    camera_bottom = camera_offset[1] + HEIGHT + safe_margin
+
+    for bullet in bullets[:]:
+        bullet_x = bullet["rect"].x
+        bullet_y = bullet["rect"].y
+
+        if not (camera_left <= bullet_x <= camera_right and camera_top <= bullet_y <= camera_bottom):
+            bullets.remove(bullet)
 
     # Adjust for camera offset when drawing bullets
     for bullet in bullets:
@@ -175,12 +191,22 @@ while running:
             player_health -= 1
 
     # Check for collisions between bullets and enemies
+    # for bullet in bullets[:]:
+    #     for enemy in enemies[:]:
+    #         if bullet["rect"].colliderect(enemy):  # Collision detected
+    #             enemies.remove(enemy)  # Remove the enemy
+    #             bullets.remove(bullet)  # Remove the bullet
+    #             break  # No need to check this bullet against other enemies
+    # Check for collisions between bullets and enemies
     for bullet in bullets[:]:
         for enemy in enemies[:]:
-            if bullet["rect"].colliderect(enemy):  # Collision detected
-                enemies.remove(enemy)  # Remove the enemy
-                bullets.remove(bullet)  # Remove the bullet
-                break  # No need to check this bullet against other enemies
+            # Only check nearby enemies (distance threshold)
+            if abs(bullet["rect"].x - enemy.x) < 50 and abs(bullet["rect"].y - enemy.y) < 50:
+                if bullet["rect"].colliderect(enemy):
+                    enemies.remove(enemy)
+                    bullets.remove(bullet)
+                    break  # Stop checking this bullet
+
             
     # Display player health
     draw_text(f"Health: {player_health}", 10, 10)
