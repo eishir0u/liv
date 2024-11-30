@@ -20,24 +20,24 @@ wave_interval = 5000  # Time between waves (ms)
 # Load sprites
 background_img = pygame.image.load("Grass_Sample.png").convert()
 player_img = pygame.image.load("gigi.jpg").convert_alpha()
-player_img = pygame.transform.scale(player_img, (60, 60))  # Larger player size
+player_img = pygame.transform.scale(player_img, (40, 40))  # Resize as needed
 bullet_img = pygame.image.load("gigi.jpg").convert_alpha()
-bullet_img = pygame.transform.scale(bullet_img, (10, 10))  # Resize bullets
+bullet_img = pygame.transform.scale(bullet_img, (20, 20))  # Resize as needed
 
 # Fonts
 font = pygame.font.SysFont(None, 36)
 
 # Load enemy animation frames
-def load_animation_frames(folder):
-    """Load frames from a folder."""
+def load_animation_frames(folder, size=(40, 40)):
+    """Load frames from a folder and resize to the specified size."""
     frames = []
     for filename in sorted(os.listdir(folder)):
         if filename.endswith(".png") or filename.endswith(".jpg"):
             frame = pygame.image.load(os.path.join(folder, filename)).convert_alpha()
-            frames.append(pygame.transform.scale(frame, (30, 30)))  # Increased enemy size
+            frames.append(pygame.transform.scale(frame, size))
     return frames
 
-enemy_frames = load_animation_frames("enemy_frames")  # Folder containing animation frames
+enemy_frames = load_animation_frames("enemy_frames", size=(40, 40))  # Updated size
 enemy_frame_index = 0
 enemy_frame_delay = 100  # Milliseconds between frames
 last_frame_time = pygame.time.get_ticks()
@@ -48,21 +48,22 @@ def draw_text(text, x, y, color=WHITE):
     screen.blit(label, (x, y))
 
 def spawn_enemy():
-    """Spawns an enemy at a random edge of the world (not screen)."""
+    """Spawns an enemy at a random edge of the world."""
+    enemy_size = 40  # Adjust size dynamically if needed
     side = random.choice(["top", "bottom", "left", "right"])
     if side == "top":
         x = random.randint(0, WIDTH) + camera_offset[0]
-        y = -30 + camera_offset[1]
+        y = -enemy_size + camera_offset[1]
     elif side == "bottom":
         x = random.randint(0, WIDTH) + camera_offset[0]
-        y = HEIGHT + 30 + camera_offset[1]
+        y = HEIGHT + enemy_size + camera_offset[1]
     elif side == "left":
-        x = -30 + camera_offset[0]
+        x = -enemy_size + camera_offset[0]
         y = random.randint(0, HEIGHT) + camera_offset[1]
     else:  # "right"
-        x = WIDTH + 30 + camera_offset[0]
+        x = WIDTH + enemy_size + camera_offset[0]
         y = random.randint(0, HEIGHT) + camera_offset[1]
-    return pygame.Rect(x, y, 30, 30)  # Adjusted for larger enemies
+    return pygame.Rect(x, y, enemy_size, enemy_size)
 
 def move_towards(rect, target, speed):
     """Move a rectangle towards a target at a given speed."""
@@ -92,11 +93,25 @@ player_pos = [WIDTH // 2, HEIGHT // 2]
 player_speed = 5
 bullets = []
 enemies = []
+exp_orbs = []  # List for EXP orbs
 player_health = 10
 safe_margin = 50
 fire_rate = 300  # Milliseconds
 last_shot = 0
 player_angle = 0
+
+# Level system variables
+player_level = 1
+player_exp = 0
+exp_to_next_level = 100  # EXP required to level up
+
+def spawn_exp_orb(position):
+    """Creates an EXP orb at the given position."""
+    orb = {
+        "rect": pygame.Rect(position[0], position[1], 10, 10),  # Size of the orb
+        "color": (255, 255, 0)  # Yellow for visibility
+    }
+    exp_orbs.append(orb)
 
 # Main game loop
 if __name__ == "__main__":
@@ -133,7 +148,6 @@ while running:
     player_pos[0] += move_x * player_speed
     player_pos[1] += move_y * player_speed
 
-    # Automatic fire
     if pygame.time.get_ticks() - last_shot >= fire_rate:
         last_shot = pygame.time.get_ticks()
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -154,11 +168,18 @@ while running:
     screen.fill(BLACK)
     draw_background()
 
-    rotated_player = pygame.transform.rotate(player_img, player_angle)
-    player_rect = rotated_player.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-    screen.blit(rotated_player, player_rect.topleft)
+    # Define the player rect for collision detection
+    player_rect = pygame.Rect(
+        player_pos[0] - camera_offset[0] - player_img.get_width() // 2,
+        player_pos[1] - camera_offset[1] - player_img.get_height() // 2,
+        player_img.get_width(),
+        player_img.get_height(),
+    )
 
-    # Update bullets
+    rotated_player = pygame.transform.rotate(player_img, player_angle)
+    player_render_rect = rotated_player.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    screen.blit(rotated_player, player_render_rect.topleft)
+
     for bullet in bullets[:]:
         bullet["rect"].x += bullet["direction"][0] * 10
         bullet["rect"].y += bullet["direction"][1] * 10
@@ -166,34 +187,54 @@ while running:
         bullet_screen_y = bullet["rect"].y - camera_offset[1]
         screen.blit(bullet_img, (bullet_screen_x, bullet_screen_y))
 
-        # Check for collision with enemies
         for enemy in enemies[:]:
             if bullet["rect"].colliderect(enemy):
-                bullets.remove(bullet)
                 enemies.remove(enemy)
+                bullets.remove(bullet)
+
+                # Spawn an EXP orb at the enemy's position
+                orb_rect = pygame.Rect(enemy.x, enemy.y, 10, 10)
+                exp_orbs.append({"rect": orb_rect, "color": (0, 255, 0)})
                 break
 
-    # Update enemies
     current_time = pygame.time.get_ticks()
     if current_time - last_frame_time >= enemy_frame_delay:
         enemy_frame_index = (enemy_frame_index + 1) % len(enemy_frames)
         last_frame_time = current_time
 
-    for enemy in enemies[:]:
+    for enemy in enemies:
         move_towards(enemy, player_pos, enemy_speed)
         enemy_screen_x = enemy.x - camera_offset[0]
         enemy_screen_y = enemy.y - camera_offset[1]
         screen.blit(enemy_frames[enemy_frame_index], (enemy_screen_x, enemy_screen_y))
-
-        # Check for collision with player
         if enemy.colliderect(player_rect):
             enemies.remove(enemy)
-            player_health -= 1  # Enemy damages the player on collision
+            player_health -= 1
 
+    # Draw and collect EXP orbs
+    for orb in exp_orbs[:]:
+        orb_screen_x = orb["rect"].x - camera_offset[0]
+        orb_screen_y = orb["rect"].y - camera_offset[1]
+        pygame.draw.ellipse(screen, orb["color"], (orb_screen_x, orb_screen_y, 10, 10))
+
+        # Check collision with player
+        if player_rect.colliderect(orb["rect"]):
+            exp_orbs.remove(orb)
+            player_exp += 10  # Adjust EXP value as needed
+
+    # Handle leveling up
+    if player_exp >= player_level * 50:  # Example leveling curve
+        player_exp -= player_level * 50
+        player_level += 1
+        player_speed += 1  # Reward for leveling up
+
+    # Display stats
     draw_text(f"Health: {player_health}", 10, 10)
+    draw_text(f"Level: {player_level}", 10, 40)
+    draw_text(f"EXP: {player_exp}/{player_level * 50}", 10, 70)
 
     if player_health <= 0:
-        draw_text("Game Over!", WIDTH // 2 - 100, HEIGHT // 2, RED)
+        draw_text("GAME OVER", WIDTH // 2 - 100, HEIGHT // 2 - 50, RED)
         pygame.display.flip()
         pygame.time.wait(2000)
         running = False
