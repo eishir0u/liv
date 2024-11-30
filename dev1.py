@@ -1,29 +1,14 @@
 import pygame
-import random
 import math
 from menu import main_menu
 from settings import *
+from enemy_spawner import *
 
 # Initialize Pygame
 pygame.init()
 
-# Screen dimensions
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("liv")
-
-# Game variables
+# set clock for fps
 clock = pygame.time.Clock()
-enemy_speed = 2
-wave_interval = 5000  # Time between waves (ms)
-
-# Load sprites
-background_img = pygame.image.load("Grass_Sample.png").convert()
-player_img = pygame.image.load("gigi.jpg").convert_alpha()  # Replace with your sprite file
-player_img = pygame.transform.scale(player_img, (30, 30))   # Resize as needed
-bullet_img = pygame.image.load("gigi.jpg").convert_alpha()  # Replace with your sprite file
-bullet_img = pygame.transform.scale(bullet_img, (10, 10))   # Resize as needed
-enemy_img = pygame.image.load("gigi.jpg").convert_alpha()   # Replace with your sprite file
-enemy_img = pygame.transform.scale(enemy_img, (20, 20))     # Resize as needed
 
 # Fonts
 font = pygame.font.SysFont(None, 36)
@@ -33,25 +18,6 @@ def draw_text(text, x, y, color=WHITE):
     label = font.render(text, True, color)
     screen.blit(label, (x, y))
 
-# def spawn_enemy():
-def spawn_enemy():
-    """Spawns an enemy at a random edge of the world (not screen)."""
-    side = random.choice(["top", "bottom", "left", "right"])
-    if side == "top":
-        x = random.randint(0, WIDTH) + camera_offset[0]
-        y = -20 + camera_offset[1]
-    elif side == "bottom":
-        x = random.randint(0, WIDTH) + camera_offset[0]
-        y = HEIGHT + 20 + camera_offset[1]
-    elif side == "left":
-        x = -20 + camera_offset[0]
-        y = random.randint(0, HEIGHT) + camera_offset[1]
-    else:  # "right"
-        x = WIDTH + 20 + camera_offset[0]
-        y = random.randint(0, HEIGHT) + camera_offset[1]
-    return pygame.Rect(x, y, 20, 20)
-
-
 def move_towards(rect, target, speed):
     """Move a rectangle towards a target at a given speed."""
     dx, dy = target[0] - rect.x, target[1] - rect.y
@@ -59,10 +25,7 @@ def move_towards(rect, target, speed):
     if dist != 0:
         rect.x += int(dx / dist * speed)
         rect.y += int(dy / dist * speed)
-# Camera setup
-camera_offset = [0, 0]  # Offset of the camera
-background_width, background_height = background_img.get_width(), background_img.get_height()
-
+        
 # Infinite background tiling
 def draw_background():
     # Ensure integer division for start_x and start_y
