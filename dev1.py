@@ -11,15 +11,6 @@ pygame.init()
 
 # set clock for fps
 clock = pygame.time.Clock()
-enemy_speed = 2
-wave_interval = 5000  # Time between waves (ms)
-
-# Load sprites
-background_img = pygame.image.load("Grass_Sample.png").convert()
-player_img = pygame.image.load("player.png").convert_alpha()
-player_img = pygame.transform.scale(player_img, (60, 60))  # Resize as needed
-bullet_img = pygame.image.load("bullet.png").convert_alpha()
-bullet_img = pygame.transform.scale(bullet_img, (30, 30))  # Resize as needed
 
 # Fonts
 font = pygame.font.SysFont(None, 36)
@@ -48,35 +39,15 @@ def draw_text(text, x, y, color=WHITE):
     label = font.render(text, True, color)
     screen.blit(label, (x, y))
 
-def spawn_enemy():
-    """Spawns an enemy at a random edge of the world."""
-    enemy_size = 40  # Adjust size dynamically if needed
-    side = random.choice(["top", "bottom", "left", "right"])
-    if side == "top":
-        x = random.randint(0, WIDTH) + camera_offset[0]
-        y = -enemy_size + camera_offset[1]
-    elif side == "bottom":
-        x = random.randint(0, WIDTH) + camera_offset[0]
-        y = HEIGHT + enemy_size + camera_offset[1]
-    elif side == "left":
-        x = -enemy_size + camera_offset[0]
-        y = random.randint(0, HEIGHT) + camera_offset[1]
-    else:  # "right"
-        x = WIDTH + enemy_size + camera_offset[0]
-        y = random.randint(0, HEIGHT) + camera_offset[1]
-    return pygame.Rect(x, y, enemy_size, enemy_size)
-
 def move_towards(rect, target, speed):
     """Move a rectangle towards a target at a given speed with normalized diagonal movement."""
     dx, dy = target[0] - rect.x, target[1] - rect.y
     dist = math.sqrt(dx**2 + dy**2)
     if dist != 0:
-        rect.x += int(dx / dist * speed)
-        rect.y += int(dy / dist * speed)
-
-# Camera setup
-camera_offset = [0, 0]  # Offset of the camera
-background_width, background_height = background_img.get_width(), background_img.get_height()
+        dx /= dist  # Normalize dx
+        dy /= dist  # Normalize dy
+    rect.x += int(dx * speed)
+    rect.y += int(dy * speed)
 
 # Infinite background tiling
 def draw_background():
@@ -88,23 +59,6 @@ def draw_background():
             tile_x = x * background_width - int(camera_offset[0])
             tile_y = y * background_height - int(camera_offset[1])
             screen.blit(background_img, (tile_x, tile_y))
-
-# Game variables
-player_pos = [WIDTH // 2, HEIGHT // 2]
-player_speed = 5
-bullets = []
-enemies = []
-exp_orbs = []  # List for EXP orbs
-player_health = 10
-safe_margin = 50
-fire_rate = 300  # Milliseconds
-last_shot = 0
-player_angle = 0
-
-# Level system variables
-player_level = 1
-player_exp = 0
-exp_to_next_level = 100  # EXP required to level up
 
 def spawn_exp_orb(position):
     """Creates an EXP orb at the given position."""
