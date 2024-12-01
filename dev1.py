@@ -50,6 +50,10 @@ def spawn_exp_orb(position):
 
 facing_right = True  # Track the direction the player is facing
 
+#timer
+level_duration = 10 * 60 * 1000  # 10 minutes in milliseconds
+start_time = pygame.time.get_ticks()  # Record the starting time
+
 # Main game loop
 if __name__ == "__main__":
     main_menu(screen)
@@ -141,10 +145,18 @@ while running:
                 exp_orbs.append({"rect": orb_rect, "color": (0, 255, 0)})
                 break
 
-    current_time = pygame.time.get_ticks()
-    if current_time - last_frame_time >= enemy_frame_delay:
-        enemy_frame_index = (enemy_frame_index + 1) % len(enemy_frames)
-        last_frame_time = current_time
+    current_time = pygame.time.get_ticks()  # Current game time
+    elapsed_time = current_time - start_time  # Time elapsed since level start
+    time_remaining = max(0, level_duration - elapsed_time)  # Remaining time
+
+    # Display the timer on the screen
+    minutes = time_remaining // 60000
+    seconds = (time_remaining % 60000) // 1000
+    timer_text = f"{minutes:02}:{seconds:02}"
+    font = pygame.font.SysFont(None, 50)  # Adjust font size as needed
+    timer_surface = font.render(timer_text, True, (255, 255, 255))
+    timer_rect = timer_surface.get_rect(center=(WIDTH // 2, 30))
+    screen.blit(timer_surface, timer_rect)
 
     for enemy in enemies[:]:  # Use a copy of the list to avoid iteration issues when removing enemies
         move_towards(enemy, player_pos, enemy_speed)
@@ -195,8 +207,15 @@ while running:
     if player_health <= 0:
         draw_text("GAME OVER", WIDTH // 2 - 100, HEIGHT // 2 - 50, RED)
         pygame.display.flip()
-        pygame.time.wait(2000)
+        pygame.time.wait(5000)
         running = False
+
+    if time_remaining <= 0:
+        font = pygame.font.SysFont(None, 80)
+        complete_text = font.render("LEVEL COMPLETE!", True, (0, 255, 0))
+        screen.blit(complete_text, (WIDTH // 2 - 200, HEIGHT // 2 - 40))
+        pygame.display.flip()
+        pygame.time.wait(3000)
 
     pygame.display.flip()
     clock.tick(FPS)
