@@ -57,6 +57,19 @@ def draw_health_bar(x, y, width, height, current_health, max_health, border_colo
     # Draw the filled portion
     pygame.draw.rect(screen, fill_color, (x + 2, y + 2, fill_width, height - 4))  # Adjust for border
 
+def draw_exp_bar(x, y, width, height, current_exp, max_exp, level, border_color=WHITE, fill_color=(0, 255, 0)):
+    """Draw an EXP bar with level text inside."""
+    pygame.draw.rect(screen, border_color, (x, y, width, height), 2)  # Draw the border
+    fill_width = int((current_exp / max_exp) * (width - 4))  # Calculate fill width
+    pygame.draw.rect(screen, fill_color, (x + 2, y + 2, fill_width, height - 4))  # Draw the fill
+
+    # Draw level text
+    level_font = pygame.font.SysFont(None, 24)  # Smaller font size
+    level_text = f"Level {level}"
+    text_surface = level_font.render(level_text, True, WHITE)
+    text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))
+    screen.blit(text_surface, text_rect)
+    
 facing_right = True  # Track the direction the player is facing
 
 #timer
@@ -210,8 +223,7 @@ while running:
 
     # Display stats
     draw_health_bar(10, 10, 200, 20, player_health, 10)
-    draw_text(f"Level: {player_level}", 10, 40)
-    draw_text(f"EXP: {player_exp}/{player_level * 50}", 10, 70)
+    draw_exp_bar(10, 40, 200, 20, player_exp, player_level * 50, player_level)
 
     if player_health <= 0:
         draw_text("GAME OVER", WIDTH // 2 - 100, HEIGHT // 2 - 50, RED)
