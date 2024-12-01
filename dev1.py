@@ -48,6 +48,15 @@ def spawn_exp_orb(position):
     }
     exp_orbs.append(orb)
 
+def draw_health_bar(x, y, width, height, current_health, max_health, border_color=WHITE, fill_color=RED):
+    """Draw a health bar for the player."""
+    # Draw the border
+    pygame.draw.rect(screen, border_color, (x, y, width, height), 2)  # 2px border
+    # Calculate the fill width
+    fill_width = int((current_health / max_health) * (width - 4))  # Subtract 4 for border
+    # Draw the filled portion
+    pygame.draw.rect(screen, fill_color, (x + 2, y + 2, fill_width, height - 4))  # Adjust for border
+
 facing_right = True  # Track the direction the player is facing
 
 #timer
@@ -200,7 +209,7 @@ while running:
             player_health += 2
 
     # Display stats
-    draw_text(f"Health: {player_health}", 10, 10)
+    draw_health_bar(10, 10, 200, 20, player_health, 10)
     draw_text(f"Level: {player_level}", 10, 40)
     draw_text(f"EXP: {player_exp}/{player_level * 50}", 10, 70)
 
