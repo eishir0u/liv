@@ -78,3 +78,4 @@ def main_menu(screen):
                 elif quit_button_rect.collidepoint(mouse_pos):  # Quit button clicked
                     pygame.quit()
                     exit()
+                    
