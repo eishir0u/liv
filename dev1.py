@@ -4,7 +4,6 @@ import os
 from menu import main_menu
 from settings import *
 from enemy_spawner import *
-from pygame import mixer
 
 # Initialize Pygame
 pygame.init()
@@ -14,10 +13,6 @@ clock = pygame.time.Clock()
 
 # Fonts
 font = pygame.font.SysFont(None, 36)
-
-# Background Music
-mixer.music.load('cirnos_theme_remix.wav')
-mixer.music.play(-1)
 
 # Load enemy animation frames
 def load_animation_frames(folder, size=(40, 40)):

@@ -1,4 +1,5 @@
 import pygame
+from pygame import mixer
 
 # Game Set up
 WIDTH = 1280
@@ -56,3 +57,9 @@ bullet_img = pygame.transform.scale(bullet_img, (30, 30))   # Resize as needed
 # Camera setup
 camera_offset = [0, 0]  # Offset of the camera
 background_width, background_height = background_img.get_width(), background_img.get_height()
+
+# Background Music
+pygame.mixer.init()
+my_sound = pygame.mixer.Sound('cirnos_theme_remix.wav')
+my_sound.play(-1)
+my_sound.set_volume(0.75)
