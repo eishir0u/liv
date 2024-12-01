@@ -24,12 +24,14 @@ def draw_text(text, x, y, color=WHITE):
     screen.blit(label, (x, y))
 
 def move_towards(rect, target, speed):
-    """Move a rectangle towards a target at a given speed."""
+    """Move a rectangle towards a target at a given speed with normalized diagonal movement."""
     dx, dy = target[0] - rect.x, target[1] - rect.y
     dist = math.sqrt(dx**2 + dy**2)
     if dist != 0:
-        rect.x += int(dx / dist * speed)
-        rect.y += int(dy / dist * speed)
+        dx /= dist  # Normalize dx
+        dy /= dist  # Normalize dy
+    rect.x += int(dx * speed)
+    rect.y += int(dy * speed)
         
 # Infinite background tiling
 def draw_background():
