@@ -1,6 +1,5 @@
 import pygame
 import math
-import os
 from menu import main_menu
 from settings import *
 from enemy_spawner import *
@@ -13,21 +12,6 @@ clock = pygame.time.Clock()
 
 # Fonts
 font = pygame.font.SysFont(None, 36)
-
-# Load enemy animation frames
-def load_animation_frames(folder, size=(40, 40)):
-    """Load frames from a folder and resize to the specified size."""
-    frames = []
-    for filename in sorted(os.listdir(folder)):
-        if filename.endswith(".png") or filename.endswith(".jpg"):
-            frame = pygame.image.load(os.path.join(folder, filename)).convert_alpha()
-            frames.append(pygame.transform.scale(frame, size))
-    return frames
-
-enemy_frames = load_animation_frames("enemy_frames", size=(40, 40))  # Updated size
-enemy_frame_index = 0
-enemy_frame_delay = 100  # Milliseconds between frames
-last_frame_time = pygame.time.get_ticks()
 
 # Functions
 def draw_text(text, x, y, color=WHITE):
@@ -63,6 +47,8 @@ def spawn_exp_orb(position):
     }
     exp_orbs.append(orb)
 
+facing_right = True  # Track the direction the player is facing
+
 # Main game loop
 if __name__ == "__main__":
     main_menu(screen)
@@ -86,14 +72,16 @@ while running:
         move_y = 1
     if keys[pygame.K_a]:
         move_x = -1
+        facing_right = False  # Face left
     if keys[pygame.K_d]:
         move_x = 1
+        facing_right = True  # Face right
 
     if move_x != 0 or move_y != 0:
         magnitude = math.sqrt(move_x**2 + move_y**2)
         move_x /= magnitude
         move_y /= magnitude
-        player_angle = math.degrees(math.atan2(-move_y, move_x))
+
 
     player_pos[0] += move_x * player_speed
     player_pos[1] += move_y * player_speed
@@ -118,17 +106,22 @@ while running:
     screen.fill(BLACK)
     draw_background()
 
-    # Define the player rect for collision detection
+    # # Define the player rect for collision detection
     player_rect = pygame.Rect(
-        player_pos[0] - camera_offset[0] - player_img.get_width() // 2,
-        player_pos[1] - camera_offset[1] - player_img.get_height() // 2,
+        player_pos[0] - player_img.get_width() // 2,
+        player_pos[1] - player_img.get_height() // 2,
         player_img.get_width(),
         player_img.get_height(),
     )
 
-    rotated_player = pygame.transform.rotate(player_img, player_angle)
-    player_render_rect = rotated_player.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-    screen.blit(rotated_player, player_render_rect.topleft)
+
+    # Render the player
+    player_render = player_img
+    if not facing_right:
+        player_render = pygame.transform.flip(player_img, True, False)  # Flip horizontally
+    player_render_rect = player_render.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    screen.blit(player_render, player_render_rect.topleft)
+
 
     for bullet in bullets[:]:
         bullet["rect"].x += bullet["direction"][0] * 10
@@ -152,25 +145,30 @@ while running:
         enemy_frame_index = (enemy_frame_index + 1) % len(enemy_frames)
         last_frame_time = current_time
 
-    for enemy in enemies:
+    for enemy in enemies[:]:  # Use a copy of the list to avoid iteration issues when removing enemies
         move_towards(enemy, player_pos, enemy_speed)
         enemy_screen_x = enemy.x - camera_offset[0]
         enemy_screen_y = enemy.y - camera_offset[1]
         screen.blit(enemy_frames[enemy_frame_index], (enemy_screen_x, enemy_screen_y))
-        if enemy.colliderect(player_rect):
-            enemies.remove(enemy)
-            player_health -= 1
 
-    # Draw and collect EXP orbs
-    for orb in exp_orbs[:]:
+        # Check collision with the player
+        if enemy.colliderect(player_rect):
+            enemies.remove(enemy)  # Remove enemy
+            player_health -= 1     # Decrement player health
+            print(f"Player hit! Health: {player_health}")  # Debugging line
+
+    # Draw Exp Orb
+    for orb in exp_orbs[:]:  # Iterate through a copy of the list
         orb_screen_x = orb["rect"].x - camera_offset[0]
         orb_screen_y = orb["rect"].y - camera_offset[1]
+        pygame.draw.ellipse(screen, (0, 0, 255), (orb_screen_x - 2, orb_screen_y - 2, 14, 14))
         pygame.draw.ellipse(screen, orb["color"], (orb_screen_x, orb_screen_y, 10, 10))
 
-        # Check collision with player
+        # Check if player collects the orb
         if player_rect.colliderect(orb["rect"]):
-            exp_orbs.remove(orb)
-            player_exp += 10  # Adjust EXP value as needed
+            exp_orbs.remove(orb)  # Remove the orb
+            player_exp += 10      # Increment player EXP
+            print(f"EXP collected! Current EXP: {player_exp}")  # Debugging line
 
     # Handle leveling up
     if player_exp >= player_level * 50:  # Example leveling curve
