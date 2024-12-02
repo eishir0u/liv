@@ -48,14 +48,21 @@ def spawn_exp_orb(position):
     }
     exp_orbs.append(orb)
 
-def draw_health_bar(x, y, width, height, current_health, max_health, border_color=WHITE, fill_color=RED):
-    """Draw a health bar for the player."""
+def draw_health_bar(x, y, width, height, current_health, max_health, border_color=WHITE, fill_color=RED, text_color=WHITE):
+    """Draw a static-sized health bar with a health label inside."""
     # Draw the border
     pygame.draw.rect(screen, border_color, (x, y, width, height), 2)  # 2px border
     # Calculate the fill width
     fill_width = int((current_health / max_health) * (width - 4))  # Subtract 4 for border
     # Draw the filled portion
     pygame.draw.rect(screen, fill_color, (x + 2, y + 2, fill_width, height - 4))  # Adjust for border
+    
+    # Add health text inside the bar
+    health_font = pygame.font.SysFont(None, 24)
+    health_text = f"{current_health}/{max_health}"
+    text_surface = health_font.render(health_text, True, WHITE)
+    text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))
+    screen.blit(text_surface, text_rect)
 
 def draw_exp_bar(x, y, width, height, current_exp, max_exp, level, border_color=WHITE, fill_color=(0, 255, 0)):
     """Draw an EXP bar with level text inside."""
@@ -219,10 +226,11 @@ while running:
         elif chosen_skill == "Attack Speed":
             fire_rate = max(100, fire_rate - 50)  # Reduce fire rate (faster attacks)
         elif chosen_skill == "Health":
-            player_health += 2
+            player_max_health += 2
+            player_health = min(player_health + 2, player_max_health)
 
     # Display stats
-    draw_health_bar(10, 10, 200, 20, player_health, 10)
+    draw_health_bar(10, 10, 200, 20, player_health, player_max_health)
     draw_exp_bar(10, 40, 200, 20, player_exp, player_level * 50, player_level)
 
     if player_health <= 0:

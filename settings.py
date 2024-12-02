@@ -15,6 +15,7 @@ wave_interval = 5000  # Time between waves (ms)
 player_pos = [WIDTH // 2, HEIGHT // 2]
 player_size = 100
 exp_orbs = []  # List for EXP orbs
+player_max_health = 10
 player_health = 10
 player_angle = 0  # Initial angle the player is facing (default: 0 degrees)
 player_speed = 2
