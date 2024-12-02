@@ -215,7 +215,7 @@ while running:
 
         # Apply the selected skill
         if chosen_skill == "Speed":
-            player_speed += 1
+            player_speed += 0.5
         elif chosen_skill == "Attack Speed":
             fire_rate = max(100, fire_rate - 50)  # Reduce fire rate (faster attacks)
         elif chosen_skill == "Health":

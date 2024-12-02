@@ -4,7 +4,7 @@ def skill_selection(screen, font):
     # Skills
     skills = [
         {"name": "Speed", "description": "Increase player speed."},
-        {"name": "Attack Speed", "description": "Reduce fire rate."},
+        {"name": "Attack Speed", "description": "Increase fire rate."},
         {"name": "Health", "description": "Increase player health."}
     ]
 
