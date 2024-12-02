@@ -14,6 +14,7 @@ clock = pygame.time.Clock()
 # Fonts
 font = pygame.font.SysFont(None, 36)
 
+
 # Functions
 def draw_text(text, x, y, color=WHITE):
     label = font.render(text, True, color)
@@ -76,6 +77,9 @@ def draw_exp_bar(x, y, width, height, current_exp, max_exp, level, border_color=
     text_surface = level_font.render(level_text, True, WHITE)
     text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))
     screen.blit(text_surface, text_rect)
+
+def calculate_enemy_speed(base_speed, elapsed_time, scale_factor=0.01):
+    return base_speed + (elapsed_time // 1000) * scale_factor
     
 facing_right = True  # Track the direction the player is facing
 
@@ -187,6 +191,9 @@ while running:
     timer_rect = timer_surface.get_rect(center=(WIDTH // 2, 30))
     screen.blit(timer_surface, timer_rect)
 
+    # Dynamically calculate enemy speed
+    current_enemy_speed = calculate_enemy_speed(enemy_speed, elapsed_time)
+
     for enemy in enemies[:]:  # Use a copy of the list to avoid iteration issues when removing enemies
         move_towards(enemy, player_pos, enemy_speed)
         enemy_screen_x = enemy.x - camera_offset[0]
@@ -226,8 +233,8 @@ while running:
         elif chosen_skill == "Attack Speed":
             fire_rate = max(100, fire_rate - 50)  # Reduce fire rate (faster attacks)
         elif chosen_skill == "Health":
-            player_max_health += 2
-            player_health = min(player_health + 2, player_max_health)
+            player_max_health += 2  # Increase max health
+            player_health = player_max_health  # Refill health to the new max
 
     # Display stats
     draw_health_bar(10, 10, 200, 20, player_health, player_max_health)

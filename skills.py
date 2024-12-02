@@ -5,7 +5,7 @@ def skill_selection(screen, font):
     skills = [
         {"name": "Speed", "description": "Increase player speed."},
         {"name": "Attack Speed", "description": "Increase fire rate."},
-        {"name": "Health", "description": "Increase player health."}
+        {"name": "Health", "description": "Increase max health."}
     ]
 
     # Define skill box dimensions
