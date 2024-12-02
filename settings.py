@@ -19,8 +19,8 @@ player_max_health = 10
 player_health = 10
 player_angle = 0  # Initial angle the player is facing (default: 0 degrees)
 player_speed = 2
-bullet_speed = 7
-fire_rate = 300  # Frames between shots
+bullet_speed = 5
+fire_rate = 500  # Frames between shots
 last_shot = 0
 
 # Level system variables

@@ -78,7 +78,7 @@ def draw_exp_bar(x, y, width, height, current_exp, max_exp, level, border_color=
     text_rect = text_surface.get_rect(center=(x + width // 2, y + height // 2))
     screen.blit(text_surface, text_rect)
 
-def calculate_enemy_speed(base_speed, elapsed_time, scale_factor=0.01):
+def calculate_enemy_speed(base_speed, elapsed_time, scale_factor=0.02):
     return base_speed + (elapsed_time // 1000) * scale_factor
     
 facing_right = True  # Track the direction the player is facing
