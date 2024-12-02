@@ -10,6 +10,13 @@ safe_margin = 50  # Allows a small buffer for bullets outside the screen
 # Game variables
 enemy_speed = 2
 wave_interval = 5000  # Time between waves (ms)
+base_wave_size = 5  # Initial wave size
+scale_factor = 2  # Enemies added per minute
+max_wave_size = 50  # Maximum enemies in a wave
+
+def calculate_wave_size(base_wave_size, elapsed_time, scale_factor=2, max_wave_size=50):
+    wave_size = base_wave_size + (elapsed_time // 60000) * scale_factor
+    return min(wave_size, max_wave_size)
 
 # Player Values
 player_pos = [WIDTH // 2, HEIGHT // 2]

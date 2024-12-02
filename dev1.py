@@ -98,8 +98,11 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.USEREVENT:
-            for _ in range(5):  # Spawn a wave of enemies
+        elif event.type == pygame.USEREVENT:  # Wave spawn event
+            elapsed_time = pygame.time.get_ticks() - start_time  # Time elapsed since start
+            wave_size = calculate_wave_size(base_wave_size, elapsed_time, scale_factor, max_wave_size)
+
+            for _ in range(wave_size):  # Spawn enemies based on the wave size
                 enemies.append(spawn_enemy())
 
     keys = pygame.key.get_pressed()
