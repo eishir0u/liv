@@ -20,7 +20,12 @@ def spawn_enemy():
     else:  # "right"
         x = WIDTH + enemy_size + camera_offset[0]
         y = random.randint(0, HEIGHT) + camera_offset[1]
-    return pygame.Rect(x, y, enemy_size, enemy_size)
+    # Create an enemy dictionary with a health attribute
+    enemy = {
+        "rect": pygame.Rect(x, y, enemy_size, enemy_size),
+        "health": 10  # Assign initial health value
+    }
+    return enemy
 
 # Load enemy animation frames
 def load_animation_frames(folder, size=(40, 40)):

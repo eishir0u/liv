@@ -4,6 +4,7 @@ from menu import main_menu
 from settings import *
 from enemy_spawner import *
 from skills import skill_selection
+from weapon_selection import weapon_selection
 
 # Initialize Pygame
 pygame.init()
@@ -20,8 +21,15 @@ def draw_text(text, x, y, color=WHITE):
     label = font.render(text, True, color)
     screen.blit(label, (x, y))
 
-def move_towards(rect, target, speed):
-    """Move a rectangle towards a target at a given speed with normalized diagonal movement."""
+def draw_weapon_info(screen, weapon_name, x, y):
+    """Display current weapon info."""
+    weapon_text = f"Weapon: {weapon_name}"
+    weapon_surface = font.render(weapon_text, True, WHITE)
+    screen.blit(weapon_surface, (x, y))
+
+def move_towards(enemy, target, speed):
+    """Move an enemy (dictionary with a rect) towards a target at a given speed."""
+    rect = enemy["rect"]  # Extract the rect from the dictionary
     dx, dy = target[0] - rect.x, target[1] - rect.y
     dist = math.sqrt(dx**2 + dy**2)
     if dist != 0:
@@ -90,6 +98,14 @@ start_time = pygame.time.get_ticks()  # Record the starting time
 # Main game loop
 if __name__ == "__main__":
     main_menu(screen)
+    selected_weapon = weapon_selection(screen, font)  # Call weapon selection
+    print(f"Selected Weapon: {selected_weapon}")  # Debugging/logging
+    
+    # Apply weapon attributes
+    fire_rate = weapon_stats[selected_weapon]["fire_rate"]
+    bullet_damage = weapon_stats[selected_weapon]["damage"]
+    bullet_spread = weapon_stats[selected_weapon]["spread"]
+    bullet_count = weapon_stats[selected_weapon]["bullet_count"]
 
 running = True
 pygame.time.set_timer(pygame.USEREVENT, wave_interval)
@@ -127,6 +143,7 @@ while running:
     player_pos[0] += move_x * player_speed
     player_pos[1] += move_y * player_speed
 
+    # Fire bullets based on selected weapon
     if pygame.time.get_ticks() - last_shot >= fire_rate:
         last_shot = pygame.time.get_ticks()
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -138,9 +155,25 @@ while running:
 
         if distance != 0:
             direction = (dx / distance, dy / distance)
-            bullet_rect = pygame.Rect(player_pos[0], player_pos[1], 10, 10)
-            bullets.append({"rect": bullet_rect, "direction": direction})
 
+            # Fire bullets based on weapon attributes
+            for _ in range(bullet_count):
+                spread_angle = random.uniform(-bullet_spread, bullet_spread)
+                spread_dx = (
+                    direction[0] * math.cos(math.radians(spread_angle))
+                    - direction[1] * math.sin(math.radians(spread_angle))
+                )
+                spread_dy = (
+                    direction[0] * math.sin(math.radians(spread_angle))
+                    + direction[1] * math.cos(math.radians(spread_angle))
+                )
+                bullet_rect = pygame.Rect(player_pos[0], player_pos[1], 10, 10)
+                bullets.append({
+                    "rect": bullet_rect,
+                    "direction": (spread_dx, spread_dy),
+                    "damage": bullet_damage
+                })
+    
     camera_offset[0] = player_pos[0] - WIDTH // 2
     camera_offset[1] = player_pos[1] - HEIGHT // 2
 
@@ -164,22 +197,32 @@ while running:
     screen.blit(player_render, player_render_rect.topleft)
 
 
-    for bullet in bullets[:]:
-        bullet["rect"].x += bullet["direction"][0] * 10
-        bullet["rect"].y += bullet["direction"][1] * 10
+    bullets_to_remove = []
+
+    for bullet in bullets:
+        # Move the bullet
+        bullet["rect"].x += bullet["direction"][0] * bullet_speed
+        bullet["rect"].y += bullet["direction"][1] * bullet_speed
+
+        # Draw the bullet on the screen
         bullet_screen_x = bullet["rect"].x - camera_offset[0]
         bullet_screen_y = bullet["rect"].y - camera_offset[1]
         screen.blit(bullet_img, (bullet_screen_x, bullet_screen_y))
-
         for enemy in enemies[:]:
-            if bullet["rect"].colliderect(enemy):
-                enemies.remove(enemy)
-                bullets.remove(bullet)
+            for enemy in enemies:
+                if bullet["rect"].colliderect(enemy["rect"]):
+                    print(f"Bullet {bullet} hit enemy {enemy}. Enemy health: {enemy['health']}")
+                    enemy["health"] -= bullet["damage"]
+                    if enemy["health"] <= 0:
+                        print(f"Enemy {enemy} destroyed!")
+                        enemies.remove(enemy)
+                    bullets_to_remove.append(bullet)  # Mark bullet for removal
+                    break
 
-                # Spawn an EXP orb at the enemy's position
-                orb_rect = pygame.Rect(enemy.x, enemy.y, 10, 10)
-                exp_orbs.append({"rect": orb_rect, "color": (0, 255, 0)})
-                break
+        # Remove bullets after the iteration
+        for bullet in bullets_to_remove:
+            if bullet in bullets:
+                bullets.remove(bullet)
 
     current_time = pygame.time.get_ticks()  # Current game time
     elapsed_time = current_time - start_time  # Time elapsed since level start
@@ -199,12 +242,12 @@ while running:
 
     for enemy in enemies[:]:  # Use a copy of the list to avoid iteration issues when removing enemies
         move_towards(enemy, player_pos, enemy_speed)
-        enemy_screen_x = enemy.x - camera_offset[0]
-        enemy_screen_y = enemy.y - camera_offset[1]
+        enemy_screen_x = enemy["rect"].x - camera_offset[0]
+        enemy_screen_y = enemy["rect"].y - camera_offset[1]
         screen.blit(enemy_frames[enemy_frame_index], (enemy_screen_x, enemy_screen_y))
 
         # Check collision with the player
-        if enemy.colliderect(player_rect):
+        if enemy["rect"].colliderect(player_rect):  # Access the rect inside the enemy dictionary
             enemies.remove(enemy)  # Remove enemy
             player_health -= 1     # Decrement player health
             print(f"Player hit! Health: {player_health}")  # Debugging line
@@ -256,6 +299,9 @@ while running:
         pygame.display.flip()
         pygame.time.wait(3000)
 
+    # Draw weapon info on HUD
+    draw_weapon_info(screen, selected_weapon, 10, 70)
+    
     pygame.display.flip()
     clock.tick(FPS)
 
