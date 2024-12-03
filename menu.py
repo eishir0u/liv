@@ -1,5 +1,6 @@
 import pygame
 import os
+from weapon_selection import weapon_selection
 
 # Colors (for text if needed)
 WHITE = (255, 255, 255)
@@ -65,8 +66,7 @@ def main_menu(screen):
         screen.blit(quit_button_img, quit_button_rect.topleft)
 
         pygame.display.flip()
-
-        # Event handling
+        # Event handling for buttons
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -75,6 +75,9 @@ def main_menu(screen):
                 mouse_pos = pygame.mouse.get_pos()
                 if start_button_rect.collidepoint(mouse_pos):  # Start button clicked
                     menu_running = False
+                    selected_weapon = weapon_selection(screen, font)  # Call weapon selection
+                    print(f"Selected Weapon: {selected_weapon}")  # For debugging/logging
+                    
                 elif quit_button_rect.collidepoint(mouse_pos):  # Quit button clicked
                     pygame.quit()
                     exit()
