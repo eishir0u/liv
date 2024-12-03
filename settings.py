@@ -74,7 +74,7 @@ my_sound.set_volume(0.75)
 
 # Weapon stats
 weapon_stats = {
-    "Shotgun": {"fire_rate": 1000, "spread": 15, "damage": 50, "bullet_count": 5},
+    "Shotgun": {"fire_rate": 1000, "spread": 15, "damage": 15, "bullet_count": 5},
     "Pistol": {"fire_rate": 500, "spread": 0, "damage": 20, "bullet_count": 1},
     "Rifle": {"fire_rate": 200, "spread": 5, "damage": 10, "bullet_count": 1},
 }

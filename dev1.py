@@ -49,14 +49,6 @@ def draw_background():
             tile_y = y * background_height - int(camera_offset[1])
             screen.blit(background_img, (tile_x, tile_y))
 
-def spawn_exp_orb(position):
-    """Creates an EXP orb at the given position."""
-    orb = {
-        "rect": pygame.Rect(position[0], position[1], 10, 10),  # Size of the orb
-        "color": (255, 255, 0)  # Yellow for visibility
-    }
-    exp_orbs.append(orb)
-
 def draw_health_bar(x, y, width, height, current_health, max_health, border_color=WHITE, fill_color=RED, text_color=WHITE):
     """Draw a static-sized health bar with a health label inside."""
     # Draw the border
@@ -251,19 +243,6 @@ while running:
             enemies.remove(enemy)  # Remove enemy
             player_health -= 1     # Decrement player health
             print(f"Player hit! Health: {player_health}")  # Debugging line
-
-    # Draw Exp Orb
-    for orb in exp_orbs[:]:  # Iterate through a copy of the list
-        orb_screen_x = orb["rect"].x - camera_offset[0]
-        orb_screen_y = orb["rect"].y - camera_offset[1]
-        pygame.draw.ellipse(screen, (0, 0, 255), (orb_screen_x - 2, orb_screen_y - 2, 14, 14))
-        pygame.draw.ellipse(screen, orb["color"], (orb_screen_x, orb_screen_y, 10, 10))
-
-        # Check if player collects the orb
-        if player_rect.colliderect(orb["rect"]):
-            exp_orbs.remove(orb)  # Remove the orb
-            player_exp += 10      # Increment player EXP
-            print(f"EXP collected! Current EXP: {player_exp}")  # Debugging line
 
     # Handle leveling up
     if player_exp >= player_level * 50:  # Example leveling curve
