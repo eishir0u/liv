@@ -226,10 +226,11 @@ while running:
         for enemy in enemies[:]:
             for enemy in enemies:
                 if bullet["rect"].colliderect(enemy["rect"]):
-                    print(f"Bullet {bullet} hit enemy {enemy}. Enemy health: {enemy['health']}")
+                    print(f"Bullet hit! Damage: {bullet['damage']}, Enemy health before: {enemy['health']}")
                     enemy["health"] -= bullet["damage"]
+                    print(f"Enemy health after: {enemy['health']}")
                     if enemy["health"] <= 0:
-                        print(f"Enemy {enemy} destroyed!")
+                        print(f"Enemy destroyed! Remaining health: {enemy['health']}")
                         enemies.remove(enemy)
                         player_exp += enemy.get("exp", 10)  # Award EXP when killing the enemy
                     bullets_to_remove.append(bullet)  # Mark bullet for removal
