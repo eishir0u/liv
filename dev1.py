@@ -5,6 +5,7 @@ from settings import *
 from enemy_spawner import *
 from skills import skill_selection
 from weapon_selection import weapon_selection
+from map_selection import *
 
 # Initialize Pygame
 pygame.init()
@@ -103,6 +104,19 @@ if __name__ == "__main__":
     main_menu(screen)
     selected_weapon = weapon_selection(screen, font)  # Call weapon selection
     print(f"Selected Weapon: {selected_weapon}")  # Debugging/logging
+
+    selected_map = map_selection(screen, font)  # Call map selection
+    print(f"Selected Map: {selected_map}")  # Debugging/logging
+
+     # Load the selected map's background
+    if selected_map == "Grasslands":
+        background_img = pygame.image.load("Grass_Sample.png").convert()
+    elif selected_map == "Desert":
+        background_img = pygame.image.load("desert.png").convert()
+    elif selected_map == "Dungeon":
+        background_img = pygame.image.load("dungeon.jpeg").convert()
+
+    background_width, background_height = background_img.get_width(), background_img.get_height()
     
     # Apply weapon attributes
     fire_rate = weapon_stats[selected_weapon]["fire_rate"]

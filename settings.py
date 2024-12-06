@@ -54,7 +54,7 @@ pygame.display.set_caption("liv")
 
 # Sprite setup
 # Load sprites
-background_img = pygame.image.load("Grass_Sample.png").convert()
+background_img = pygame.image.load("dungeon.jpeg").convert()
 player_img = pygame.image.load("player.png").convert_alpha()  # Replace with your sprite file
 player_img = pygame.transform.scale(player_img, (60, 60))   # Resize as needed
 bullet_img = pygame.image.load("bullet.png").convert_alpha()  # Replace with your sprite file

@@ -38,7 +38,7 @@ def weapon_selection(screen, font):
     selected_weapon = None
     running = True
     while running:
-         # Draw background
+        # Draw background
         screen.blit(background, (0, 0))  # Draw background image
 
         # Render weapon boxes and images
