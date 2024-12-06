@@ -21,6 +21,10 @@ def draw_text(text, x, y, color=WHITE):
     label = font.render(text, True, color)
     screen.blit(label, (x, y))
 
+def rotate_image(image, angle):
+    """Rotate an image around its center."""
+    return pygame.transform.rotate(image, -math.degrees(angle))
+
 def draw_weapon_info(screen, weapon_name, x, y):
     """Display current weapon info."""
     weapon_text = f"Weapon: {weapon_name}"
@@ -147,7 +151,8 @@ while running:
 
         if distance != 0:
             direction = (dx / distance, dy / distance)
-
+            angle = math.atan2(dy, dx)  # Calculate the angle for rotation
+            
             # Fire bullets based on weapon attributes
             for _ in range(bullet_count):
                 spread_angle = random.uniform(-bullet_spread, bullet_spread)
@@ -163,7 +168,8 @@ while running:
                 bullets.append({
                     "rect": bullet_rect,
                     "direction": (spread_dx, spread_dy),
-                    "damage": bullet_damage
+                    "damage": bullet_damage,
+                    "angle": angle + math.radians(spread_angle)  # Store the angle with spread applied
                 })
     
     camera_offset[0] = player_pos[0] - WIDTH // 2
@@ -199,7 +205,9 @@ while running:
         # Draw the bullet on the screen
         bullet_screen_x = bullet["rect"].x - camera_offset[0]
         bullet_screen_y = bullet["rect"].y - camera_offset[1]
-        screen.blit(bullet_img, (bullet_screen_x, bullet_screen_y))
+        rotated_bullet = rotate_image(bullet_img, bullet["angle"])  # Rotate based on the angle
+        rotated_rect = rotated_bullet.get_rect(center=(bullet_screen_x + 5, bullet_screen_y + 5))  # Adjust center
+        screen.blit(rotated_bullet, rotated_rect.topleft)
         for enemy in enemies[:]:
             for enemy in enemies:
                 if bullet["rect"].colliderect(enemy["rect"]):
