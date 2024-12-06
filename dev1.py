@@ -90,6 +90,15 @@ def draw_exp_bar(x, y, width, height, current_exp, max_exp, level, border_color=
 
 def calculate_enemy_speed(base_speed, elapsed_time, scale_factor=0.02):
     return base_speed + (elapsed_time // 1000) * scale_factor
+
+def draw_enemy_health_bar(x, y, width, height, current_health, max_health, border_color=WHITE, fill_color=RED):
+    """Draw an enemy's health bar above them."""
+    # Draw the border of the health bar
+    pygame.draw.rect(screen, border_color, (x, y, width, height), 2)  # 2px border
+    # Calculate the filled portion width
+    fill_width = int((current_health / max_health) * (width - 4))  # Subtract 4 for borders
+    pygame.draw.rect(screen, fill_color, (x + 2, y + 2, fill_width, height - 4))  # Adjust for borders
+
     
 facing_right = True  # Track the direction the player is facing
 
@@ -117,11 +126,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.USEREVENT:  # Wave spawn event
-            elapsed_time = pygame.time.get_ticks() - start_time  # Time elapsed since start
+            elapsed_time = pygame.time.get_ticks() - start_time  # Time elapsed since the game started
             wave_size = calculate_wave_size(base_wave_size, elapsed_time, scale_factor, max_wave_size)
 
             for _ in range(wave_size):  # Spawn enemies based on the wave size
-                enemies.append(spawn_enemy())
+                enemies.append(spawn_enemy(elapsed_time))
 
     keys = pygame.key.get_pressed()
     move_x, move_y = 0, 0
@@ -259,6 +268,13 @@ while running:
             current_frame = pygame.transform.flip(current_frame, True, False)
 
         screen.blit(current_frame, (enemy_screen_x, enemy_screen_y))
+
+        # Draw the health bar above the enemy
+        health_bar_width = enemy["rect"].width  # Match width to enemy size
+        health_bar_height = 8  # Adjust height as needed
+        health_bar_x = enemy_screen_x  # Align with enemy's position
+        health_bar_y = enemy_screen_y - 10  # Place slightly above the enemy
+        draw_enemy_health_bar(health_bar_x, health_bar_y, health_bar_width, health_bar_height, enemy["health"], enemy["max_health"])
 
         # Check collision with the player
         if enemy["rect"].colliderect(player_rect):

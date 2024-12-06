@@ -4,7 +4,7 @@ import os
 from settings import *
 
 # def spawn_enemy():
-def spawn_enemy():
+def spawn_enemy(elapsed_time):
     """Spawns an enemy at a random edge of the world."""
     enemy_size = 40  # Adjust size dynamically if needed
     side = random.choice(["top", "bottom", "left", "right"])
@@ -20,10 +20,16 @@ def spawn_enemy():
     else:  # "right"
         x = WIDTH + enemy_size + camera_offset[0]
         y = random.randint(0, HEIGHT) + camera_offset[1]
-    # Create an enemy dictionary with a health attribute
+     # Calculate HP dynamically (e.g., base HP + increase per minute)
+    # Calculate HP dynamically
+    base_hp = 100
+    hp_increase_rate = 100  # Extra HP per minute
+    max_health = base_hp + (elapsed_time // 60000) * hp_increase_rate  # Increase HP every minute
+
     enemy = {
         "rect": pygame.Rect(x, y, enemy_size, enemy_size),
-        "health": 10,  # Assign initial health value
+        "health": max_health,  # Current health starts at max health
+        "max_health": max_health,  # Store the max health
         "facing_right": True  # Default to facing right
     }
     return enemy
