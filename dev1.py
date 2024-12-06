@@ -208,6 +208,7 @@ while running:
                     if enemy["health"] <= 0:
                         print(f"Enemy {enemy} destroyed!")
                         enemies.remove(enemy)
+                        player_exp += enemy.get("exp", 10)  # Award EXP when killing the enemy
                     bullets_to_remove.append(bullet)  # Mark bullet for removal
                     break
 
