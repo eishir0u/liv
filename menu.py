@@ -75,8 +75,6 @@ def main_menu(screen):
                 mouse_pos = pygame.mouse.get_pos()
                 if start_button_rect.collidepoint(mouse_pos):  # Start button clicked
                     menu_running = False
-                    selected_weapon = weapon_selection(screen, font)  # Call weapon selection
-                    print(f"Selected Weapon: {selected_weapon}")  # For debugging/logging
                     
                 elif quit_button_rect.collidepoint(mouse_pos):  # Quit button clicked
                     pygame.quit()
