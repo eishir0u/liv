@@ -112,7 +112,7 @@ if __name__ == "__main__":
     if selected_map == "Grasslands":
         background_img = pygame.image.load("Grass_Sample.png").convert()
     elif selected_map == "Desert":
-        background_img = pygame.image.load("desert.png").convert()
+        background_img = pygame.image.load("desert.jpg").convert()
     elif selected_map == "Dungeon":
         background_img = pygame.image.load("dungeon.jpeg").convert()
 

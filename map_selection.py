@@ -5,7 +5,7 @@ def map_selection(screen, font):
     # Load map previews (replace with your images)
     maps = [
         {"name": "Grasslands", "image": pygame.image.load("Grass_Sample.png").convert()},
-        {"name": "Desert", "image": pygame.image.load("desert.png").convert()},
+        {"name": "Desert", "image": pygame.image.load("desert.jpg").convert()},
         {"name": "Dungeon", "image": pygame.image.load("dungeon.jpeg").convert()},
     ]
 

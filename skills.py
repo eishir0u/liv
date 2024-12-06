@@ -1,15 +1,29 @@
 import pygame
 
 def skill_selection(screen, font):
-    # Skills
+    background = pygame.image.load("selectionbg.jpg").convert()  # Replace with your actual background file
+    background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))  # Scale to screen size
+
+# Load unique skill icons
+    icons = {
+        "Speed": pygame.image.load("speed.png").convert_alpha(),  # Replace with actual icon filenames
+        "Attack Speed": pygame.image.load("aspd.png").convert_alpha(),
+        "Health": pygame.image.load("health.png").convert_alpha()
+    }
+
+    # Scale icons to a consistent size
+    icon_size = (80, 80)
+    for key in icons:
+        icons[key] = pygame.transform.scale(icons[key], icon_size)
+
     skills = [
-        {"name": "Speed", "description": "Increase player speed."},
-        {"name": "Attack Speed", "description": "Increase fire rate."},
-        {"name": "Health", "description": "Increase max health."}
+        {"name": "Speed", "description": "Increase player speed.", "icon": icons["Speed"]},
+        {"name": "Attack Speed", "description": "Increase fire rate.", "icon": icons["Attack Speed"]},
+        {"name": "Health", "description": "Increase max health.", "icon": icons["Health"]}
     ]
 
     # Define skill box dimensions
-    skill_box_width = 400
+    skill_box_width = 600
     skill_box_height = 100
     skill_box_margin = 20
     skill_boxes = []
@@ -25,7 +39,7 @@ def skill_selection(screen, font):
     selected_skill = None
     running = True
     while running:
-        screen.fill((0, 0, 0))  # Clear the screen
+        screen.blit(background, (0, 0))  # Draw the background image
 
         # Render skill boxes and text
         for i, skill in enumerate(skills):
@@ -33,10 +47,18 @@ def skill_selection(screen, font):
             if skill_boxes[i].collidepoint(pygame.mouse.get_pos()):
                 color = (100, 100, 255)  # Highlighted color
             pygame.draw.rect(screen, color, skill_boxes[i], border_radius=10)
+
+            # Draw skill icon
+            icon_x = skill_boxes[i].x + 10
+            icon_y = skill_boxes[i].y + (skill_box_height - icon_size[1]) // 2
+            screen.blit(skill["icon"], (icon_x, icon_y))
+
+            # Draw skill name and description
+            text_x = icon_x + icon_size[0] + 10
             text = font.render(skill["name"], True, (255, 255, 255))
             desc = font.render(skill["description"], True, (255, 255, 255))
-            screen.blit(text, (skill_boxes[i].x + 10, skill_boxes[i].y + 10))
-            screen.blit(desc, (skill_boxes[i].x + 10, skill_boxes[i].y + 50))
+            screen.blit(text, (text_x, skill_boxes[i].y + 10))
+            screen.blit(desc, (text_x, skill_boxes[i].y + 50))
 
         # Event handling
         for event in pygame.event.get():
