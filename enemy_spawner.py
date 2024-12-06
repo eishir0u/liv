@@ -23,7 +23,8 @@ def spawn_enemy():
     # Create an enemy dictionary with a health attribute
     enemy = {
         "rect": pygame.Rect(x, y, enemy_size, enemy_size),
-        "health": 10  # Assign initial health value
+        "health": 10,  # Assign initial health value
+        "facing_right": True  # Default to facing right
     }
     return enemy
 

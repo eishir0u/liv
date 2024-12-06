@@ -41,6 +41,12 @@ def move_towards(enemy, target, speed):
         dy /= dist  # Normalize dy
     rect.x += int(dx * speed)
     rect.y += int(dy * speed)
+    
+    # Update facing direction
+    if dx > 0:
+        enemy["facing_right"] = True
+    elif dx < 0:
+        enemy["facing_right"] = False
 
 # Infinite background tiling
 def draw_background():
@@ -241,17 +247,25 @@ while running:
     # Dynamically calculate enemy speed
     current_enemy_speed = calculate_enemy_speed(enemy_speed, elapsed_time)
 
-    for enemy in enemies[:]:  # Use a copy of the list to avoid iteration issues when removing enemies
+    # Use a copy of the list to avoid iteration issues when removing enemies
+    for enemy in enemies[:]:
         move_towards(enemy, player_pos, enemy_speed)
         enemy_screen_x = enemy["rect"].x - camera_offset[0]
         enemy_screen_y = enemy["rect"].y - camera_offset[1]
-        screen.blit(enemy_frames[enemy_frame_index], (enemy_screen_x, enemy_screen_y))
+
+        # Flip the sprite if the enemy is facing left
+        current_frame = enemy_frames[enemy_frame_index]
+        if not enemy["facing_right"]:
+            current_frame = pygame.transform.flip(current_frame, True, False)
+
+        screen.blit(current_frame, (enemy_screen_x, enemy_screen_y))
 
         # Check collision with the player
-        if enemy["rect"].colliderect(player_rect):  # Access the rect inside the enemy dictionary
+        if enemy["rect"].colliderect(player_rect):
             enemies.remove(enemy)  # Remove enemy
             player_health -= 1     # Decrement player health
             print(f"Player hit! Health: {player_health}")  # Debugging line
+
 
     # Handle leveling up
     if player_exp >= player_level * 50:  # Example leveling curve
