@@ -1,12 +1,12 @@
 import pygame
 
 def skill_selection(screen, font):
-    background = pygame.image.load("selectionbg.jpg").convert()  # Replace with your actual background file
+    background = pygame.image.load("selectionbg.jpg").convert()  
     background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))  # Scale to screen size
 
 # Load unique skill icons
     icons = {
-        "Speed": pygame.image.load("speed.png").convert_alpha(),  # Replace with actual icon filenames
+        "Speed": pygame.image.load("speed.png").convert_alpha(),
         "Attack Speed": pygame.image.load("aspd.png").convert_alpha(),
         "Health": pygame.image.load("health.png").convert_alpha()
     }

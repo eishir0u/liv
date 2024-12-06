@@ -41,6 +41,11 @@ def main_menu(screen):
     start_button_rect = start_button_img.get_rect(center=(640, 300))  # Center of the screen
     quit_button_rect = quit_button_img.get_rect(center=(640, 450))  # Below the start button
 
+    # Load title image (replace with your title image path)
+    title_image = pygame.image.load("livlogo.png").convert_alpha()
+    scaled_title_image = pygame.transform.scale(title_image, (250, 250))  
+    title_rect = title_image.get_rect(center=(765, 240))  
+
     # Animation variables
     current_frame = 0
     frame_delay = 100  # Delay in milliseconds between frames
@@ -58,8 +63,8 @@ def main_menu(screen):
         # Draw the current frame of the animated background
         screen.blit(background_frames[current_frame], (0, 0))
 
-        # Draw title
-        draw_text(screen, "Liv", 540, 150, WHITE)
+        # Draw title image instead of text
+        screen.blit(scaled_title_image, title_rect.topleft)
 
         # Draw buttons
         screen.blit(start_button_img, start_button_rect.topleft)
