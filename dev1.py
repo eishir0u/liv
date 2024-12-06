@@ -6,6 +6,7 @@ from enemy_spawner import *
 from skills import skill_selection
 from weapon_selection import weapon_selection
 from map_selection import *
+from pause_screen import *
 
 # Initialize Pygame
 pygame.init()
@@ -99,6 +100,8 @@ facing_right = True  # Track the direction the player is facing
 level_duration = 10 * 60 * 1000  # 10 minutes in milliseconds
 start_time = pygame.time.get_ticks()  # Record the starting time
 
+paused = False
+
 # Main game loop
 if __name__ == "__main__":
     main_menu(screen)
@@ -124,74 +127,86 @@ if __name__ == "__main__":
     bullet_spread = weapon_stats[selected_weapon]["spread"]
     bullet_count = weapon_stats[selected_weapon]["bullet_count"]
 
+
 running = True
 pygame.time.set_timer(pygame.USEREVENT, wave_interval)
 
 while running:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.USEREVENT:  # Wave spawn event
-            elapsed_time = pygame.time.get_ticks() - start_time  # Time elapsed since the game started
-            wave_size = calculate_wave_size(base_wave_size, elapsed_time, scale_factor, max_wave_size)
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:  # Detect Escape key to pause the game
+                    result = pause_screen(screen, font)  # Trigger pause screen
 
-            for _ in range(wave_size):  # Spawn enemies based on the wave size
-                enemies.append(spawn_enemy(elapsed_time))
+                    if result == "menu":  # If Return to Menu is chosen
+                        main_menu(screen)  # Return to main menu
+                        break  # Break out of the current game loop to go back to menu
+                    elif result == "resume":  # If Resume is chosen
+                        paused = False  # Resume the game
+                
+                if not paused:
+                    if event.type == pygame.USEREVENT:  # Wave spawn event
+                        elapsed_time = pygame.time.get_ticks() - start_time  # Time elapsed since the game started
+                        wave_size = calculate_wave_size(base_wave_size, elapsed_time, scale_factor, max_wave_size)
 
-    keys = pygame.key.get_pressed()
-    move_x, move_y = 0, 0
-    if keys[pygame.K_w]:
-        move_y = -1
-    if keys[pygame.K_s]:
-        move_y = 1
-    if keys[pygame.K_a]:
-        move_x = -1
-        facing_right = False  # Face left
-    if keys[pygame.K_d]:
-        move_x = 1
-        facing_right = True  # Face right
+                        for _ in range(wave_size):  # Spawn enemies based on the wave size
+                            enemies.append(spawn_enemy(elapsed_time))
+    if not paused:
+        keys = pygame.key.get_pressed()
+        move_x, move_y = 0, 0
+        if keys[pygame.K_w]:
+            move_y = -1
+        if keys[pygame.K_s]:
+            move_y = 1
+        if keys[pygame.K_a]:
+            move_x = -1
+            facing_right = False  # Face left
+        if keys[pygame.K_d]:
+            move_x = 1
+            facing_right = True  # Face right
 
-    if move_x != 0 or move_y != 0:
-        magnitude = math.sqrt(move_x**2 + move_y**2)
-        move_x /= magnitude
-        move_y /= magnitude
+        if move_x != 0 or move_y != 0:
+            magnitude = math.sqrt(move_x**2 + move_y**2)
+            move_x /= magnitude
+            move_y /= magnitude
 
 
-    player_pos[0] += move_x * player_speed
-    player_pos[1] += move_y * player_speed
+        player_pos[0] += move_x * player_speed
+        player_pos[1] += move_y * player_speed
 
-    # Fire bullets based on selected weapon
-    if pygame.time.get_ticks() - last_shot >= fire_rate:
-        last_shot = pygame.time.get_ticks()
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        target_x = mouse_x + camera_offset[0]
-        target_y = mouse_y + camera_offset[1]
-        dx = target_x - player_pos[0]
-        dy = target_y - player_pos[1]
-        distance = math.sqrt(dx**2 + dy**2)
+        # Fire bullets based on selected weapon
+        if pygame.time.get_ticks() - last_shot >= fire_rate:
+            last_shot = pygame.time.get_ticks()
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            target_x = mouse_x + camera_offset[0]
+            target_y = mouse_y + camera_offset[1]
+            dx = target_x - player_pos[0]
+            dy = target_y - player_pos[1]
+            distance = math.sqrt(dx**2 + dy**2)
 
-        if distance != 0:
-            direction = (dx / distance, dy / distance)
-            angle = math.atan2(dy, dx)  # Calculate the angle for rotation
-            
-            # Fire bullets based on weapon attributes
-            for _ in range(bullet_count):
-                spread_angle = random.uniform(-bullet_spread, bullet_spread)
-                spread_dx = (
-                    direction[0] * math.cos(math.radians(spread_angle))
-                    - direction[1] * math.sin(math.radians(spread_angle))
-                )
-                spread_dy = (
-                    direction[0] * math.sin(math.radians(spread_angle))
-                    + direction[1] * math.cos(math.radians(spread_angle))
-                )
-                bullet_rect = pygame.Rect(player_pos[0], player_pos[1], 10, 10)
-                bullets.append({
-                    "rect": bullet_rect,
-                    "direction": (spread_dx, spread_dy),
-                    "damage": bullet_damage,
-                    "angle": angle + math.radians(spread_angle)  # Store the angle with spread applied
-                })
+            if distance != 0:
+                direction = (dx / distance, dy / distance)
+                angle = math.atan2(dy, dx)  # Calculate the angle for rotation
+                
+                # Fire bullets based on weapon attributes
+                for _ in range(bullet_count):
+                    spread_angle = random.uniform(-bullet_spread, bullet_spread)
+                    spread_dx = (
+                        direction[0] * math.cos(math.radians(spread_angle))
+                        - direction[1] * math.sin(math.radians(spread_angle))
+                    )
+                    spread_dy = (
+                        direction[0] * math.sin(math.radians(spread_angle))
+                        + direction[1] * math.cos(math.radians(spread_angle))
+                    )
+                    bullet_rect = pygame.Rect(player_pos[0], player_pos[1], 10, 10)
+                    bullets.append({
+                        "rect": bullet_rect,
+                        "direction": (spread_dx, spread_dy),
+                        "damage": bullet_damage,
+                        "angle": angle + math.radians(spread_angle)  # Store the angle with spread applied
+                    })
     
     camera_offset[0] = player_pos[0] - WIDTH // 2
     camera_offset[1] = player_pos[1] - HEIGHT // 2
