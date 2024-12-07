@@ -30,8 +30,8 @@ def main_menu(screen):
         background_frames.append(frame)
 
     # Load button images
-    start_button_img = pygame.image.load("PlayBtn.png").convert_alpha()
-    quit_button_img = pygame.image.load("ExitBtn.png").convert_alpha()
+    start_button_img = pygame.image.load("asset/PlayBtn.png").convert_alpha()
+    quit_button_img = pygame.image.load("asset/ExitBtn.png").convert_alpha()
 
     # Scale buttons if needed
     start_button_img = pygame.transform.scale(start_button_img, (200, 100))
@@ -42,7 +42,7 @@ def main_menu(screen):
     quit_button_rect = quit_button_img.get_rect(center=(640, 450))  # Below the start button
 
     # Load title image (replace with your title image path)
-    title_image = pygame.image.load("livlogo.png").convert_alpha()
+    title_image = pygame.image.load("asset/livlogo.png").convert_alpha()
     scaled_title_image = pygame.transform.scale(title_image, (250, 250))  
     title_rect = title_image.get_rect(center=(765, 240))  
 

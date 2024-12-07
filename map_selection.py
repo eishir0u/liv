@@ -1,12 +1,12 @@
 import pygame
 def map_selection(screen, font):
-    background = pygame.image.load("selectionbg.jpg").convert()  # Replace with your image file
+    background = pygame.image.load("asset/selectionbg.jpg").convert()  # Replace with your image file
     background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
     # Load map previews (replace with your images)
     maps = [
-        {"name": "Grasslands", "image": pygame.image.load("Grass_Sample.png").convert()},
-        {"name": "Desert", "image": pygame.image.load("desert.jpg").convert()},
-        {"name": "Dungeon", "image": pygame.image.load("dungeon.jpeg").convert()},
+        {"name": "Grasslands", "image": pygame.image.load("asset/Grass_Sample.png").convert()},
+        {"name": "Desert", "image": pygame.image.load("asset/desert.jpg").convert()},
+        {"name": "Dungeon", "image": pygame.image.load("asset/dungeon.jpeg").convert()},
     ]
 
     # Scale images to preview size

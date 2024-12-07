@@ -56,10 +56,10 @@ pygame.display.set_caption("liv")
 
 # Sprite setup
 # Load sprites
-background_img = pygame.image.load("dungeon.jpeg").convert()
-player_img = pygame.image.load("player.png").convert_alpha()  # Replace with your sprite file
+background_img = pygame.image.load("asset/dungeon.jpeg").convert()
+player_img = pygame.image.load("asset/player.png").convert_alpha()  # Replace with your sprite file
 player_img = pygame.transform.scale(player_img, (60, 60))   # Resize as needed
-bullet_img = pygame.image.load("bullet.png").convert_alpha()  # Replace with your sprite file
+bullet_img = pygame.image.load("asset/bullet.png").convert_alpha()  # Replace with your sprite file
 bullet_img = pygame.transform.scale(bullet_img, (30, 30))   # Resize as needed
 # enemy_img = pygame.image.load("gigi.jpg").convert_alpha()   # Replace with your sprite file
 # enemy_img = pygame.transform.scale(enemy_img, (20, 20))     # Resize as needed
@@ -70,7 +70,7 @@ background_width, background_height = background_img.get_width(), background_img
 
 # Background Music
 pygame.mixer.init()
-my_sound = pygame.mixer.Sound('cirnos_theme_remix.wav')
+my_sound = pygame.mixer.Sound('asset/cirnos_theme_remix.wav')
 my_sound.play(-1)
 my_sound.set_volume(0.75)
 

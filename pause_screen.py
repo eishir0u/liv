@@ -1,7 +1,7 @@
 import pygame
 
 def pause_screen(screen, font):
-    background = pygame.image.load("selectionbg.jpg").convert()  
+    background = pygame.image.load("asset/selectionbg.jpg").convert()  
     background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
 
     pause_running = True
@@ -12,8 +12,8 @@ def pause_screen(screen, font):
     LIGHT_BLUE = (100, 100, 255)
     
     # Load button images
-    resume_button_img = pygame.image.load("ResumeBtn.png").convert_alpha() 
-    return_button_img = pygame.image.load("ReturnBtn.png").convert_alpha() 
+    resume_button_img = pygame.image.load("asset/ResumeBtn.png").convert_alpha() 
+    return_button_img = pygame.image.load("asset/ReturnBtn.png").convert_alpha() 
     
     resume_button_img = pygame.transform.scale(resume_button_img, (150, 100))
     return_button_img = pygame.transform.scale(return_button_img, (150, 100))

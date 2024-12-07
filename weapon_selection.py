@@ -2,13 +2,13 @@ import pygame
 
 def weapon_selection(screen, font):
     # Load background image
-    background = pygame.image.load("selectionbg.jpg").convert()  # Replace with your image file
+    background = pygame.image.load("asset/selectionbg.jpg").convert()  # Replace with your image file
     background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))  # Scale to fit the screen
     # Weapons
     weapons = [
-        {"name": "Shotgun", "image": pygame.image.load("shotgun.png").convert_alpha()},
-        {"name": "Pistol", "image": pygame.image.load("pistol.png").convert_alpha()},
-        {"name": "Rifle", "image": pygame.image.load("rifle.png").convert_alpha()}
+        {"name": "Shotgun", "image": pygame.image.load("asset/shotgun.png").convert_alpha()},
+        {"name": "Pistol", "image": pygame.image.load("asset/pistol.png").convert_alpha()},
+        {"name": "Rifle", "image": pygame.image.load("asset/rifle.png").convert_alpha()}
     ]
 
     # Scale weapon images for consistency
