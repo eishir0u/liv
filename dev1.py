@@ -207,7 +207,7 @@ while running:
                         "damage": bullet_damage,
                         "angle": angle + math.radians(spread_angle)  # Store the angle with spread applied
                     })
-    
+
     camera_offset[0] = player_pos[0] - WIDTH // 2
     camera_offset[1] = player_pos[1] - HEIGHT // 2
 
@@ -256,11 +256,16 @@ while running:
                         player_exp += enemy.get("exp", 10)  # Award EXP when killing the enemy
                     bullets_to_remove.append(bullet)  # Mark bullet for removal
                     break
+                
+        # Check if the bullet is off-screen (depending on screen width/height)
+        if (bullet["rect"].x < camera_offset[0] or bullet["rect"].x > camera_offset[0] + WIDTH or
+        bullet["rect"].y < camera_offset[1] or bullet["rect"].y > camera_offset[1] + HEIGHT):
+            bullets_to_remove.append(bullet)  # Mark bullet for removal
 
-        # Remove bullets after the iteration
-        for bullet in bullets_to_remove:
-            if bullet in bullets:
-                bullets.remove(bullet)
+    # Remove bullets after the iteration
+    for bullet in bullets_to_remove:
+        if bullet in bullets:
+            bullets.remove(bullet)
 
     current_time = pygame.time.get_ticks()  # Current game time
     elapsed_time = current_time - start_time  # Time elapsed since level start

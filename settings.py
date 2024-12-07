@@ -44,6 +44,8 @@ RED = (255, 0, 0)
 
 # Bullet list
 bullets = []
+MAX_BULLETS = 50  # Set the maximum number of bullets
+
 
 # Enemy list
 enemies = []
