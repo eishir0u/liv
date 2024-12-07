@@ -133,25 +133,25 @@ pygame.time.set_timer(pygame.USEREVENT, wave_interval)
 
 while running:
     for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:  # Detect Escape key to pause the game
-                    result = pause_screen(screen, font)  # Trigger pause screen
-
-                    if result == "menu":  # If Return to Menu is chosen
-                        main_menu(screen)  # Return to main menu
-                        break  # Break out of the current game loop to go back to menu
-                    elif result == "resume":  # If Resume is chosen
-                        paused = False  # Resume the game
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:  # Detect Escape key to pause the game
+                result = pause_screen(screen, font)  # Trigger pause screen
+                if result == "menu":  # If Return to Menu is chosen
+                    main_menu(screen)  # Return to main menu
+                    break  # Break out of the current game loop to go back to menu
+                elif result == "resume":  # If Resume is chosen
+                    paused = False  # Resume the game
+            
+            
+        if event.type == pygame.USEREVENT:  # Wave spawn event
+            elapsed_time = pygame.time.get_ticks() - start_time  # Time elapsed since the game started
+            wave_size = calculate_wave_size(base_wave_size, elapsed_time, scale_factor, max_wave_size)
+        
+            for _ in range(wave_size):  # Spawn enemies based on the wave size
+                enemies.append(spawn_enemy(elapsed_time))
                 
-                if not paused:
-                    if event.type == pygame.USEREVENT:  # Wave spawn event
-                        elapsed_time = pygame.time.get_ticks() - start_time  # Time elapsed since the game started
-                        wave_size = calculate_wave_size(base_wave_size, elapsed_time, scale_factor, max_wave_size)
-
-                        for _ in range(wave_size):  # Spawn enemies based on the wave size
-                            enemies.append(spawn_enemy(elapsed_time))
     if not paused:
         keys = pygame.key.get_pressed()
         move_x, move_y = 0, 0
